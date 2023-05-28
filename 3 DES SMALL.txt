@@ -1,0 +1,50 @@
+from Crypto.Cipher import DES
+import binascii
+
+key = '01234567'
+plaintext = 'Hello, world!'
+
+def pad(text):
+    while len(text) % 8 != 0:
+        text += ' '
+    return text
+
+des = DES.new(key, DES.MODE_ECB)
+padded_plaintext = pad(plaintext)
+encrypted_text = des.encrypt(padded_plaintext)
+decrypted_text = des.decrypt(encrypted_text)
+print('Encrypted text:', binascii.hexlify(encrypted_text))
+print('Decrypted text:', decrypted_text.strip())
+
+
+
+
+
+import binascii
+from Crypto.Cipher import DES
+
+def des_encrypt(plaintext, key):
+    key = key.encode('utf-8')
+    plaintext = plaintext.encode('utf-8')
+    key = key[:8]
+    plaintext = plaintext + b"\0" * (8 - len(plaintext) % 8)
+    des = DES.new(key, DES.MODE_ECB)
+    ciphertext = des.encrypt(plaintext)
+    return binascii.hexlify(ciphertext).decode('utf-8')
+
+def des_decrypt(ciphertext, key):
+    key = key.encode('utf-8')
+    ciphertext = binascii.unhexlify(ciphertext.encode('utf-8'))
+    key = key[:8]
+    des = DES.new(key, DES.MODE_ECB)
+    plaintext = des.decrypt(ciphertext)
+    return plaintext.rstrip(b"\0").decode('utf-8')
+
+key = 'password'
+plaintext = 'Hello, world!'
+
+ciphertext = des_encrypt(plaintext, key)
+print('Ciphertext:', ciphertext)
+
+decrypted_text = des_decrypt(ciphertext, key)
+print('Decrypted text:', decrypted_text)
